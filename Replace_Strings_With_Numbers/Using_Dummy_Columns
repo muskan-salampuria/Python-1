@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from sklearn import linear_model
+
+#retrieving of data
+df=pd.read_csv("carprices.csv")
+
+#cleaning of data
+df.columns= [c.replace('Car Model','model') for c in df.columns]
+df.columns= [c.replace('Sell Price($)','price') for c in df.columns]
+df.columns= [c.replace('Age(yrs)','age') for c in df.columns]
+
+#creating dummy variables
+dummies=pd.get_dummies(df.model)
+
+#concatenate dummies with original dataframe
+merged=pd.concat([df,dummies],axis='columns')
+
+#drop 
+final=merged.drop(['model','Audi A5'],axis='columns')
+
+from sklearn.linear_model import LinearRegression
+model=LinearRegression()
+x=final.drop('price',axis='columns')
+y=final.price
+
+model.fit(x,y)
+
+print(model.predict([[67000,1,1,0]]))
+print(model.predict([[89000,10,1,0]]))
+
+print(model.predict([[67000,10,0,0]]))
+print(model.predict([[57000,5,0,0]]))
